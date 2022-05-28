@@ -28,14 +28,14 @@ public extension WZDataManagerDelegate {
     }
     
     @discardableResult
-    static func add(container: NSPersistentContainer = WZDataManager.shared.container, _ addHandler: (T) -> ()) -> Bool {
+    static func add(container: NSPersistentContainer, _ addHandler: (T) -> ()) -> Bool {
         let obj = T(context: container.viewContext)
         addHandler(obj)
         return container.saveContext()
     }
     
     @discardableResult
-    func update(predicate: NSPredicate, container: NSPersistentContainer = WZDataManager.shared.container, _ updateHandler:((T)->())?) -> Bool {
+    func update(predicate: NSPredicate, container: NSPersistentContainer, _ updateHandler:((T)->())?) -> Bool {
         let context = container.viewContext
         guard let request = Self.fetchRequest() else { return false }
         request.predicate = predicate
@@ -78,7 +78,7 @@ public extension NSPersistentContainer {
     
     @discardableResult
     func saveContext () -> Bool {
-        return saveContext(self.viewContext)
+        return saveContext(viewContext)
     }
     
     @discardableResult
