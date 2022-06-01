@@ -25,6 +25,7 @@ public extension WZDataManagerDelegate {
         if let name = T.description().components(separatedBy: ".").last {
             let request = NSFetchRequest<T>(entityName: name)
             request.sortDescriptors = sortDescriptors
+            request.predicate = predicate
             return request
         }
         return nil
