@@ -16,6 +16,7 @@ public protocol WZDataManagerDelegate {
     static func fetchRequest() -> NSFetchRequest<T>?
     static func add(container: NSPersistentContainer, _ addHandler:(T)->()) -> Bool
     func update(predicate: NSPredicate, container: NSPersistentContainer, _ updateHandler:((T)->())?) -> Bool
+    func delete(predicate: NSPredicate, container: NSPersistentContainer) -> Bool
 }
 
 public extension WZDataManagerDelegate {
@@ -41,7 +42,21 @@ public extension WZDataManagerDelegate {
         request.predicate = predicate
         if let result = (try? context.fetch(request)), result.count > 0 {
             updateHandler?(result.first!)
-            return container.saveContext()
+            return context.saveContext()
+        }
+        return false
+    }
+    
+    @discardableResult
+    func delete(predicate: NSPredicate, container: NSPersistentContainer) -> Bool {
+        let context = container.viewContext
+        guard let request = Self.fetchRequest() else { return false }
+        request.predicate = predicate
+        if let result = (try? context.fetch(request)), result.count > 0 {
+            for item in result {
+                context.delete(item)
+            }
+            return context.saveContext()
         }
         return false
     }
