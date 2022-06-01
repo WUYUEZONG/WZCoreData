@@ -13,7 +13,7 @@ public protocol WZDataManagerDelegate {
     
     associatedtype T: NSManagedObject
     
-    static func fetchRequest() -> NSFetchRequest<T>?
+    static func fetchRequest(predicate: NSPredicate?, _ sortDescriptors: [NSSortDescriptor]?) -> NSFetchRequest<T>?
     static func add(container: NSPersistentContainer, _ addHandler:(T)->()) -> Bool
     func update(predicate: NSPredicate, container: NSPersistentContainer, _ updateHandler:((T)->())?) -> Bool
     func delete(predicate: NSPredicate, container: NSPersistentContainer) -> Bool
@@ -21,9 +21,11 @@ public protocol WZDataManagerDelegate {
 
 public extension WZDataManagerDelegate {
     
-    static func fetchRequest() -> NSFetchRequest<T>? {
+    static func fetchRequest(predicate: NSPredicate? = nil, _ sortDescriptors: [NSSortDescriptor]? = nil) -> NSFetchRequest<T>? {
         if let name = T.description().components(separatedBy: ".").last {
-            return NSFetchRequest<T>(entityName: name)
+            let request = NSFetchRequest<T>(entityName: name)
+            request.sortDescriptors = sortDescriptors
+            return request
         }
         return nil
     }
@@ -38,8 +40,7 @@ public extension WZDataManagerDelegate {
     @discardableResult
     func update(predicate: NSPredicate, container: NSPersistentContainer, _ updateHandler:((T)->())?) -> Bool {
         let context = container.viewContext
-        guard let request = Self.fetchRequest() else { return false }
-        request.predicate = predicate
+        guard let request = Self.fetchRequest(predicate: predicate) else { return false }
         if let result = (try? context.fetch(request)), result.count > 0 {
             updateHandler?(result.first!)
             return context.saveContext()
@@ -50,8 +51,7 @@ public extension WZDataManagerDelegate {
     @discardableResult
     func delete(predicate: NSPredicate, container: NSPersistentContainer) -> Bool {
         let context = container.viewContext
-        guard let request = Self.fetchRequest() else { return false }
-        request.predicate = predicate
+        guard let request = Self.fetchRequest(predicate: predicate) else { return false }
         if let result = (try? context.fetch(request)), result.count > 0 {
             for item in result {
                 context.delete(item)
