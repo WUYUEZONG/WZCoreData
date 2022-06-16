@@ -14,9 +14,9 @@ public protocol WZDataManagerDelegate {
     associatedtype T: NSManagedObject
     
     static func fetchRequest(predicate: NSPredicate?, _ sortDescriptors: [NSSortDescriptor]?) -> NSFetchRequest<T>?
-    static func add(container: NSPersistentContainer, _ addHandler:(T)->()) -> Bool
-    static func update(predicate: NSPredicate, container: NSPersistentContainer, _ updateHandler:((T)->())?) -> Bool
-    static func delete(predicate: NSPredicate, container: NSPersistentContainer) -> Bool
+    static func add<Container: NSPersistentContainer>(container: Container, _ addHandler:(T)->()) -> Bool
+    static func update<Container: NSPersistentContainer>(predicate: NSPredicate, container: Container, _ updateHandler:((T)->())?) -> Bool
+    static func delete<Container: NSPersistentContainer>(predicate: NSPredicate, container: Container) -> Bool
 }
 
 public extension WZDataManagerDelegate {
@@ -32,14 +32,14 @@ public extension WZDataManagerDelegate {
     }
     
     @discardableResult
-    static func add(container: NSPersistentContainer, _ addHandler: (T) -> ()) -> Bool {
+    static func add<Container: NSPersistentContainer>(container: Container, _ addHandler:(T)->()) -> Bool {
         let obj = T(context: container.viewContext)
         addHandler(obj)
         return container.saveContext()
     }
     
     @discardableResult
-    static func update(predicate: NSPredicate, container: NSPersistentContainer, _ updateHandler:((T)->())?) -> Bool {
+    static func update<Container: NSPersistentContainer>(predicate: NSPredicate, container: Container, _ updateHandler:((T)->())?) -> Bool {
         let context = container.viewContext
         guard let request = Self.fetchRequest(predicate: predicate) else { return false }
         if let result = (try? context.fetch(request)) {
@@ -56,7 +56,7 @@ public extension WZDataManagerDelegate {
     }
     
     @discardableResult
-    static func delete(predicate: NSPredicate, container: NSPersistentContainer) -> Bool {
+    static func delete<Container: NSPersistentContainer>(predicate: NSPredicate, container: Container) -> Bool {
         let context = container.viewContext
         guard let request = Self.fetchRequest(predicate: predicate) else { return false }
         if let result = (try? context.fetch(request)) {
