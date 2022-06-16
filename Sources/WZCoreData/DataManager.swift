@@ -76,6 +76,8 @@ public extension WZDataManagerDelegate {
 /// 重写 `name` 属性换成自己的表名
 open class WZDataManager {
     
+    init() {}
+    
     open var name: String { "" }
     
     public lazy var container: NSPersistentContainer = {
