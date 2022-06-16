@@ -76,9 +76,7 @@ public extension WZDataManagerDelegate {
 /// 重写 `name` 属性换成自己的表名
 open class WZDataManager {
     
-    open var name: String { "WZNoteSwift" }
-    
-    public static var shared = WZDataManager()
+    open var name: String { "" }
     
     public lazy var container: NSPersistentContainer = {
         let container = NSPersistentContainer(name: name)
@@ -91,9 +89,12 @@ open class WZDataManager {
     }()
     
     @discardableResult
-    func saveContext(_ p: NSPersistentContainer = WZDataManager.shared.container) -> Bool {
+    func saveContext(_ p: NSPersistentContainer) -> Bool {
         return p.saveContext()
     }
+    
+    /// viewContext
+    open var context: NSManagedObjectContext { container.viewContext }
     
 }
 
@@ -129,7 +130,3 @@ public extension NSManagedObjectContext {
     }
 }
 
-public extension WZDataManager {
-    /// viewContext
-    var context: NSManagedObjectContext { container.viewContext }
-}
