@@ -80,7 +80,7 @@ open class WZDataManager {
     
     open var name: String { "" }
     
-    public lazy var container: NSPersistentContainer = {
+    open lazy var container: NSPersistentContainer = {
         let container = NSPersistentContainer(name: name)
         container.loadPersistentStores(completionHandler: { (storeDescription, error) in
             if let error = error as NSError? {
